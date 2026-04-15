@@ -5,6 +5,9 @@ domain:ru
 domain:xn--p1ai
 domain:su
 
+# vtb
+domain:f6.security
+
 # 2. Домены крупных российских сервисов в других зонах
 # Добавляйте сюда все, что знаете. Это и есть ваша ручная работа.
 domain:yandex.net
