@@ -1,4 +1,3 @@
-
 name: Build Custom Geosite File
 
 on:
@@ -15,22 +14,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Шаг 2: Устанавливаем компилятор от V2Fly
+      # Шаг 2: Устанавливаем компилятор с нового, правильного пути
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
           go-version: '1.20'
-      - name: Install domain-list-compiler
-        run: go install github.com/v2fly/domain-list-community/dlc@latest
+      - name: Install domain-list-compiler (dlc)
+        # ИСПРАВЛЕННАЯ СТРОКА! Используем новый репозиторий dlc.
+        run: go install github.com/v2fly/dlc@latest
 
       # Шаг 3: Компилируем ваши списки в один geosite.dat файл
       - name: Compile domain lists
-        # Это ключевая команда:
-        # -datapath ./data: где лежат исходники
-        # -outputpath geosite.dat: имя выходного файла
-        # -entry [имя_категории]:[имя_файла.txt]: создает категорию в файле
+        # Команда запускает компилятор 'dlc' с вашими категориями
         run: >
-          $GOPATH/bin/dlc -datapath ./data -outputpath geosite.dat
+          dlc -datapath ./data -outputpath geosite.dat
           -entry ru-direct:direct-list.txt
           -entry ru-proxy:proxy-list.txt
 
