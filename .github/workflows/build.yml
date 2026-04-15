@@ -3,42 +3,42 @@ name: Build Custom Geosite File
 on:
   push:
     branches:
-      - main  # Запускать при каждом изменении в репозитории
-  workflow_dispatch: # Позволяет запускать вручную со страницы Actions
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # Шаг 1: Загружаем код вашего репозитория
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Шаг 2: Устанавливаем компилятор с нового, правильного пути
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
           go-version: '1.20'
+      
+      # ===> НОВЫЙ ШАГ ДЛЯ ИСПРАВЛЕНИЯ ОШИБКИ <===
+      # Эта команда решает проблему с "terminal prompts disabled"
+      - name: Configure Go to use Git for GitHub
+        run: git config --global url."https://".insteadOf git://
+
       - name: Install domain-list-compiler (dlc)
-        # ИСПРАВЛЕННАЯ СТРОКА! Используем новый репозиторий dlc.
         run: go install github.com/v2fly/dlc@latest
 
-      # Шаг 3: Компилируем ваши списки в один geosite.dat файл
       - name: Compile domain lists
-        # Команда запускает компилятор 'dlc' с вашими категориями
         run: >
           dlc -datapath ./data -outputpath geosite.dat
           -entry ru-direct:direct-list.txt
           -entry ru-proxy:proxy-list.txt
 
-      # Шаг 4: Публикуем скомпилированный файл в релизах
       - name: Create Release and Upload Asset
         uses: softprops/action-gh-release@v1
         with:
           tag_name: latest
           name: "Latest Build"
           body: "Автоматически скомпилированный geosite.dat. Содержит списки ru-direct и ru-proxy."
-          files: geosite.dat # Имя файла для загрузки
+          files: geosite.dat
           prerelease: false
           draft: false
         env:
