@@ -1,48 +1,51 @@
-name: Build Custom Geosite File
+name: Build GeoSite Files
 
 on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
   push:
     branches:
       - main
-  workflow_dispatch:
+    paths:
+      - 'data/**'
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      # Шаг 1: Загружаем код вашего репозитория
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # Шаг 2: Устанавливаем Go
-      - name: Set up Go
-        uses: actions/setup-go@v3
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
-          go-version: '1.20'
-      
-      # Шаг 3: Устанавливаем КОНКРЕТНУЮ ВЕРСИЮ компилятора через Go Proxy
-      # Это окончательное решение проблемы.
-      - name: Install domain-list-compiler (dlc)
-        env:
-          GOPROXY: "https://proxy.golang.org,direct"
-        run: go install github.com/v2fly/dlc@v2.2.0
+          go-version: '1.22'
 
-      # Шаг 4: Компилируем ваши списки
-      - name: Compile domain lists
-        run: >
-          dlc -datapath ./data -outputpath geosite.dat
-          -entry ru-direct:direct-list.txt
-          -entry ru-proxy:proxy-list.txt
+      - name: Clone builder
+        run: |
+          git clone https://github.com/v2fly/domain-list-community.git /tmp/builder
 
-      # Шаг 5: Публикуем артефакт в релизах
-      - name: Create Release and Upload Asset
-        uses: softprops/action-gh-release@v1
+      - name: Copy our categories
+        run: |
+          cp -r data/* /tmp/builder/data/
+
+      - name: Build geosite.dat
+        run: |
+          cd /tmp/builder
+          go run ./ -datapath ./data -output geosite.dat
+
+      - name: Copy output
+        run: |
+          cp /tmp/builder/geosite.dat geosite.dat
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
           name: "Latest Build"
-          body: "Автоматически скомпилированный geosite.dat. Содержит списки ru-direct и ru-proxy."
           files: geosite.dat
-          prerelease: false
-          draft: false
+          make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
