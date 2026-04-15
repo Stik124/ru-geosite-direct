@@ -1,1 +1,48 @@
 
+name: Build Custom Geosite File
+
+on:
+  push:
+    branches:
+      - main  # Запускать при каждом изменении в репозитории
+  workflow_dispatch: # Позволяет запускать вручную со страницы Actions
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Шаг 1: Загружаем код вашего репозитория
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Шаг 2: Устанавливаем компилятор от V2Fly
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.20'
+      - name: Install domain-list-compiler
+        run: go install github.com/v2fly/domain-list-community/dlc@latest
+
+      # Шаг 3: Компилируем ваши списки в один geosite.dat файл
+      - name: Compile domain lists
+        # Это ключевая команда:
+        # -datapath ./data: где лежат исходники
+        # -outputpath geosite.dat: имя выходного файла
+        # -entry [имя_категории]:[имя_файла.txt]: создает категорию в файле
+        run: >
+          $GOPATH/bin/dlc -datapath ./data -outputpath geosite.dat
+          -entry ru-direct:direct-list.txt
+          -entry ru-proxy:proxy-list.txt
+
+      # Шаг 4: Публикуем скомпилированный файл в релизах
+      - name: Create Release and Upload Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: latest
+          name: "Latest Build"
+          body: "Автоматически скомпилированный geosite.dat. Содержит списки ru-direct и ru-proxy."
+          files: geosite.dat # Имя файла для загрузки
+          prerelease: false
+          draft: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
