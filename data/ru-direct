@@ -2,14 +2,22 @@
 
 # 1. Все домены в национальных зонах
 domain:ru
-domain:xn--p1ai
 domain:su
+domain:xn--p1ai
+domain:moscow
+domain:tatar
+domain:xn--80adxhks
+domain:xn--80asehdb
+domain:xn--80aswg
+domain:xn--c1avg
+domain:xn--d1acj3b
+domain:xn--p1acf
+domain:xn--p1ai
 
 # vtb
 domain:f6.security
 
 # 2. Домены крупных российских сервисов в других зонах
-# Добавляйте сюда все, что знаете. Это и есть ваша ручная работа.
 domain:yandex.net
 domain:vk.com
 domain:vk-portal.net
