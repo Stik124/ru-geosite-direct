@@ -1,4 +1,4 @@
-name: Build GeoSite Files
+name: Build Custom Geosite File
 
 on:
   schedule:
@@ -8,17 +8,17 @@ on:
     branches:
       - main
     paths:
-      - 'data/**'
+      - 'data/direct-list.txt'
+      - 'data/proxy-list.txt'
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Go
+      - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: '1.22'
@@ -27,18 +27,27 @@ jobs:
         run: |
           git clone https://github.com/v2fly/domain-list-community.git /tmp/builder
 
-      - name: Copy our categories
+      - name: Copy files
         run: |
-          cp -r data/* /tmp/builder/data/
+          cp -r data /tmp/builder/
 
-      - name: Build geosite.dat
+      - name: Build
         run: |
           cd /tmp/builder
-          go run ./ -datapath ./data -outputname geosite.dat
+          go run ./ -datapath ./data -outputdir ./output -outputname geosite.dat
+
+      - name: Show output
+        run: |
+          echo "=== Что создал сборщик ==="
+          find /tmp/builder/output -type f
 
       - name: Copy output
         run: |
-          cp /tmp/builder/geosite.dat geosite.dat
+          cp /tmp/builder/output/geosite.dat geosite.dat
+
+      - name: Show file size
+        run: |
+          ls -lh geosite.dat
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
