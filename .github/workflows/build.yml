@@ -1,12 +1,3 @@
-## Проблема — неправильный флаг
-
-`-output` не существует, нужно `-outputname`
-
----
-
-## Исправляем build.yml
-
-```yaml
 name: Build GeoSite Files
 
 on:
@@ -58,8 +49,3 @@ jobs:
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-```
-
----
-
-Всё готово — запускай workflow.
