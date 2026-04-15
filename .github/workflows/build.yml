@@ -1,3 +1,12 @@
+## Проблема — неправильный флаг
+
+`-output` не существует, нужно `-outputname`
+
+---
+
+## Исправляем build.yml
+
+```yaml
 name: Build GeoSite Files
 
 on:
@@ -34,7 +43,7 @@ jobs:
       - name: Build geosite.dat
         run: |
           cd /tmp/builder
-          go run ./ -datapath ./data -output geosite.dat
+          go run ./ -datapath ./data -outputname geosite.dat
 
       - name: Copy output
         run: |
@@ -49,3 +58,8 @@ jobs:
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+---
+
+Всё готово — запускай workflow.
