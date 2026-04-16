@@ -1,6 +1,6 @@
-# Мой список для прямого подключения (DIRECT)
+# Список для прямого подключения (DIRECT)
 
-# 1. Все домены в национальных зонах
+# Все домены в национальных зонах
 domain:ru
 domain:su
 domain:xn--p1ai
@@ -17,10 +17,33 @@ domain:xn--p1ai
 # vtb
 domain:f6.security
 
-# 2. Домены крупных российских сервисов в других зонах
+# vk, yandex, mail
 domain:yandex.net
 domain:vk.com
 domain:vk-portal.net
+domain:yastatic.net
+domain:vk-portal.net
+domain:userapi.com
+domain:mradx.net
 
+# google
+domain:google.com
 
-full:google.com
+# apple music
+domain:music.apple.com
+domain:api.music.apple.com
+domain:amp-api.music.apple.com
+domain:itunes.apple.com
+domain:ld.itunes.apple.com
+domain:se2.itunes.apple.com
+domain:mzstatic.com
+domain:cdn-apple.com
+domain:aaplimg.com
+domain:js-cdn.music.apple.com
+
+# Ai
+domain:deepseek.com
+
+# other
+domain:osnova.news              # сайт новости, поддомен ip - проверка ip
+domain:rosdomofon.com           
