@@ -21,7 +21,18 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: '1.25'
+          cache: true                    # встроенное кэширование
+
+      - name: Cache Go modules and build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
 
       - name: Build geosite.dat
         run: |
@@ -29,8 +40,13 @@ jobs:
             -datapath ./data \
             -outputname geosite.dat
 
+      - name: Verify generated file
+        run: |
+          ls -lh geosite.dat
+          echo "File size: $(wc -c < geosite.dat) bytes"
+
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3   # обновлено до v3 (Node 24)
         with:
           tag_name: latest
           name: "Latest Build"
